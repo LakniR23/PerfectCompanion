@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-serif: "Georgia", "Times New Roman", serif;
+
+  /* ── Core neutrals (soft, warm pink base) ── */
+  --color-cream:     #FFF7FA;
+  --color-blush:     #FFE4EC;
+  --color-dusty:     #FFD6E3;
+  --color-sand:      #F8C8D8;
+  --color-card:      #FFF0F5;
+
+  /* ── Primary pink accent system ── */
+  --color-rose:      #FF5C8A;
+  --color-rose-dk:   #E94C77;
+  --color-peach:     #FF8FA3;
+  --color-peach-dk:  #E6738B;
+
+  /* ── Soft supportive greens (kept for pets/category balance) ── */
+  --color-sage:      #A8D5BA;
+  --color-sage-lt:   #EAFBF1;
+
+  /* ── Text (softer contrast than brown) ── */
+  --color-text-dk:   #2B1B22;
+  --color-text-md:   #5A3B45;
+  --color-text-mt:   #8A6672;
+  --color-text-lt:   #B58A96;
+
+  /* ── UI neutrals ── */
+  --color-border:    #F3D6DF;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: #FFF7FA;
+    color: #2B1B22;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #FFE4EC;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #FF5C8A;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E94C77;
+  }
 }
