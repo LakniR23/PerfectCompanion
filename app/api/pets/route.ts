@@ -95,7 +95,7 @@ export async function POST(request: Request) {
         const subscribers = await (prisma as any).subscriber.findMany();
         if (subscribers.length > 0) {
           const { sendEmail } = await import("@/lib/email");
-          const emails = subscribers.map((s) => s.email);
+          const emails = subscribers.map((s: { email: string }) => s.email);
           await sendEmail({
             to: emails.join(", "),
             subject: `New Pet Listed: ${pet.name}!`,
