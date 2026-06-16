@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SubscribeForm from "@/components/common/SubscribeForm";
 
 const footerLinks = {
   Adopt: [
@@ -41,16 +42,7 @@ export default function Footer() {
             </h3>
           </div>
 
-          <div className="flex w-full md:w-auto gap-2">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="flex-1 md:w-64 px-4 py-2.5 rounded-lg text-sm text-[#2B1B22] bg-[#FFF0F5] placeholder:text-[#8A6672] focus:outline-none"
-            />
-            <button className="px-5 py-2.5 bg-[#FF8FA3] hover:bg-[#E6738B] text-white font-semibold text-sm rounded-lg">
-              Subscribe
-            </button>
-          </div>
+          <SubscribeForm variant="footer" />
         </div>
       </div>
 

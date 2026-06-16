@@ -11,26 +11,57 @@ model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
+  password  String
   phone     String?
   createdAt DateTime @default(now())
 
   pets      Pet[]
+  stories   AdoptionStory[]
 }
 
 model Pet {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   species     String
   breed       String?
-  age         Int?
+  age         String?
   gender      String?
   location    String
   description String
-  imageUrl    String?
-  adopted     Boolean  @default(false)
+  adopted     Boolean    @default(false)
 
-  ownerId String
-  owner   User @relation(fields: [ownerId], references: [id])
+  ownerName    String?   
+  ownerContact String?   
 
+  ownerId     String
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  images      PetImage[]
+  createdAt   DateTime   @default(now())
+}
+
+model PetImage {
+  id       String @id @default(cuid())
+  imageUrl String
+  petId    String
+  pet      Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model AdoptionStory {
+  id        String   @id @default(cuid())
+  petName   String
+  petType   String
+  location  String
+  story     String
+  imageUrl  String
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
   createdAt DateTime @default(now())
 }

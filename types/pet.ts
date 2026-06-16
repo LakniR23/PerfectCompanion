@@ -1,0 +1,20 @@
+export type DisplayPet = {
+  id: string | number;
+  name: string;
+  species: string;
+  breed: string;
+  ageLabel: string;
+  ageGroup: "Baby" | "Young" | "Adult" | "Senior";
+  location: string;
+  tag: string;
+  tagBg: string;
+  tagText: string;
+  img: string;
+  gender: string;
+  adopted: boolean;
+  isApiPet: boolean;
+  ownerName?: string;
+  ownerPhone?: string;
+  description?: string;
+  ownerId?: string;
+};
