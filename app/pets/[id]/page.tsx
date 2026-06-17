@@ -258,8 +258,11 @@ export default function PetDetailsPage() {
               </div>
 
               {!pet.adopted && (
-                
-                <a href={pet.ownerContact && pet.ownerContact.includes('@') ? `mailto:${pet.ownerContact}?subject=Inquiry about adopting ${pet.name}` : `mailto:${pet.owner.email}?subject=Inquiry about adopting ${pet.name}`}
+                <a 
+                  href={pet.ownerContact 
+                    ? (pet.ownerContact.includes('@') ? `mailto:${pet.ownerContact}?subject=Inquiry about adopting ${pet.name}` : `tel:${pet.ownerContact}`) 
+                    : (pet.owner.phone ? `tel:${pet.owner.phone}` : `mailto:${pet.owner.email}?subject=Inquiry about adopting ${pet.name}`)
+                  }
                   className="block w-full bg-[#FF5C8A] hover:bg-[#E94C77] text-white text-center py-4 rounded-xl font-bold text-lg shadow-md transition"
                 >
                   Contact to Adopt
