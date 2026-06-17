@@ -1,31 +1,53 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import SubscribeForm from "@/components/common/SubscribeForm";
 
-const footerLinks = {
-  Adopt: [
-    { label: "Browse Dogs", href: "/dogs" },
-    { label: "Browse Cats", href: "/cats" },
-    { label: "Browse Birds", href: "/birds" },
-    { label: "Browse Rabbits", href: "/rabbits" },
-    { label: "Small Animals", href: "/small-animals" },
-  ],
-  Resources: [
-    { label: "Adoption Guide", href: "/guide" },
-    { label: "Pet Care Tips", href: "/care" },
-    { label: "Training Resources", href: "/training" },
-    { label: "Vet Directory", href: "/vets" },
-    { label: "Blog", href: "/blog" },
-  ],
-  Organization: [
+type FooterLink = {
+  label: string;
+  href: string;
+  authRequired?: boolean;
+};
+
+const footerLinks: Record<string, FooterLink[]> = {
+  Explore: [
+    { label: "Find a Companion", href: "/find" },
+    { label: "Happy Tails (Adopted)", href: "/adopted" },
     { label: "About Us", href: "/about" },
-    { label: "Partner Shelters", href: "/shelters" },
-    { label: "Volunteer", href: "/volunteer" },
-    { label: "Donate", href: "/donate" },
-    { label: "Contact", href: "/contact" },
+    { label: "My Profile", href: "/profile" },
+  ],
+  "Adopt by Pet": [
+    { label: "Dogs", href: "/dogs" },
+    { label: "Cats", href: "/cats" },
+    { label: "Birds", href: "/birds" },
+    { label: "Rabbits", href: "/rabbits" },
+    { label: "Other Pets", href: "/other" },
+  ],
+  "Get Involved": [
+    { label: "List a Pet", href: "/profile/pets/add", authRequired: true },
+    { label: "Share a Story", href: "/profile/stories/add", authRequired: true },
+    { label: "Manage Listings", href: "/profile/pets", authRequired: true },
   ],
 };
 
 export default function Footer() {
+  const [user, setUser] = useState<{ id: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => { if (d.user) setUser(d.user); })
+      .catch(() => {});
+  }, []);
+
+  const handleLinkClick = (e: React.MouseEvent, authRequired?: boolean) => {
+    if (authRequired && !user) {
+      e.preventDefault();
+      window.dispatchEvent(new Event("open-auth-modal"));
+    }
+  };
+
   return (
     <footer className="bg-[#2B1B22] text-white">
 
@@ -57,10 +79,11 @@ export default function Footer() {
               </h4>
 
               <ul className="space-y-2">
-                {links.map(({ label, href }) => (
+                {links.map(({ label, href, authRequired }) => (
                   <li key={label}>
                     <Link
                       href={href}
+                      onClick={(e) => handleLinkClick(e, authRequired)}
                       className="text-sm text-[#B58A96] hover:text-white transition"
                     >
                       {label}
@@ -79,9 +102,6 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} Perfect Companion</p>
 
           <div className="flex gap-5 mt-2 sm:mt-0">
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/terms">Terms</Link>
-            <Link href="/accessibility">Accessibility</Link>
           </div>
         </div>
       </div>

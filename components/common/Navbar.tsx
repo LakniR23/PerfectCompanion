@@ -372,6 +372,10 @@ export default function Navbar() {
       .then((res) => res.json())
       .then((data) => { if (data.user) setUser(data.user); })
       .catch(() => {});
+
+    const handleOpenAuth = () => setAuthOpen(true);
+    window.addEventListener("open-auth-modal", handleOpenAuth);
+    return () => window.removeEventListener("open-auth-modal", handleOpenAuth);
   }, []);
 
   const handleLogout = async () => {
@@ -384,7 +388,7 @@ export default function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-[#FFF0F5]/95 backdrop-blur-md border-b border-[#F3D6DF]">
-        <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+        <nav className="max-w-7xl mx-auto px-2 lg:px-4 h-16 flex items-center justify-between">
 
           {/* Logo */}
           <Link href="/" className="flex items-center -gap-4">

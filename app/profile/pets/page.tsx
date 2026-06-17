@@ -20,7 +20,8 @@ export default function MyPetsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [adopting, setAdopting] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState<string | null>(null); // ← moved up
+  const [unadopting, setUnadopting] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const fetchPets = () => {
     setLoading(true);
@@ -37,7 +38,7 @@ export default function MyPetsPage() {
   useEffect(() => { fetchPets(); }, []);
 
   const handleMarkAdopted = async (id: string) => {
-    if (!confirm("Mark this pet as adopted? This cannot be undone.")) return;
+    if (!confirm("Mark this pet as adopted?")) return;
     setAdopting(id);
     try {
       const res = await fetch(`/api/pets/${id}/adopt`, { method: "PATCH" });
@@ -46,6 +47,19 @@ export default function MyPetsPage() {
       }
     } finally {
       setAdopting(null);
+    }
+  };
+
+  const handleUnmarkAdopted = async (id: string) => {
+    if (!confirm("Unmark this pet as adopted? It will be active again.")) return;
+    setUnadopting(id);
+    try {
+      const res = await fetch(`/api/pets/${id}/unadopt`, { method: "PATCH" });
+      if (res.ok) {
+        setPets((prev) => prev.map((p) => p.id === id ? { ...p, adopted: false } : p));
+      }
+    } finally {
+      setUnadopting(null);
     }
   };
 
@@ -139,7 +153,9 @@ export default function MyPetsPage() {
                   <PetCard
                     key={pet.id}
                     pet={pet}
+                    unadopting={unadopting === pet.id}
                     deleting={deleting === pet.id}
+                    onUnmarkAdopted={handleUnmarkAdopted}
                     onDelete={handleDelete}
                   />
                 ))}
@@ -153,12 +169,14 @@ export default function MyPetsPage() {
 }
 
 function PetCard({
-  pet, adopting, deleting, onMarkAdopted, onDelete,
+  pet, adopting, unadopting, deleting, onMarkAdopted, onUnmarkAdopted, onDelete,
 }: {
   pet: Pet;
   adopting?: boolean;
+  unadopting?: boolean;
   deleting?: boolean;
   onMarkAdopted?: (id: string) => void;
+  onUnmarkAdopted?: (id: string) => void;
   onDelete?: (id: string) => void;
 }) {
   const imgSrc = pet.images[0]?.imageUrl || "";
@@ -219,12 +237,19 @@ function PetCard({
         )}
 
         {pet.adopted && (
-          <div className="mt-4">
-            <Link
-              href={`/profile/pets/${pet.id}`}
-              className="block text-center border border-[#F3D6DF] hover:bg-[#FFF0F5] py-2 rounded-xl text-sm font-semibold transition"
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => onUnmarkAdopted?.(pet.id)}
+              disabled={unadopting}
+              className="flex-1 bg-white border border-[#F3D6DF] hover:bg-[#FFF0F5] disabled:opacity-60 text-[#8A6672] py-2 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-1"
             >
-              View Details
+              {unadopting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "↺"} Undo
+            </button>
+            <Link
+              href={`/profile/pets/${pet.id}/edit`}
+              className="flex-1 border border-[#F3D6DF] hover:bg-[#FFF0F5] py-2 rounded-xl text-center text-sm font-semibold transition text-[#2B1B22]"
+            >
+              <Edit className="w-4 h-4 inline-block mr-1" /> Edit
             </Link>
           </div>
         )}

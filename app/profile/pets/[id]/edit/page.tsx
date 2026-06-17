@@ -45,8 +45,8 @@ export default function EditPetPage() {
           gender: data.gender ?? "Male", 
           location: data.location, 
           description: data.description,
-          ownerName: data.ownerName,
-          ownerContact: data.ownerContact
+          ownerName: data.ownerName ?? "",
+          ownerContact: data.ownerContact ?? ""
         });
 
         const existingImages = data.images.map((img: { imageUrl: string }, idx: number) => ({

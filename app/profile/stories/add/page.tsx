@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Image as ImageIcon } from "lucide-react";
 
 export default function AddStoryPage() {
   const router = useRouter();
@@ -10,22 +10,41 @@ export default function AddStoryPage() {
   const [error, setError] = useState<string | null>(null);
   
   const [form, setForm] = useState({
-    petName: "", petType: "", location: "", story: "", imageUrl: ""
+    petName: "", petType: "", location: "", story: ""
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
 
-    // Provide a random fallback image if none provided for convenience in this demo
-    const imgToUse = form.imageUrl.trim() || "/images/homepage/hero5.jpg";
+    const formData = new FormData();
+    formData.append("petName", form.petName);
+    formData.append("petType", form.petType);
+    formData.append("location", form.location);
+    formData.append("story", form.story);
+    if (imageFile) formData.append("image", imageFile);
 
     try {
       const res = await fetch("/api/stories", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, imageUrl: imgToUse }),
+        body: formData,
       });
       if (res.ok) {
         router.push("/profile/stories");
@@ -81,14 +100,28 @@ export default function AddStoryPage() {
             Location
           </label>
         </div>
-        <div className="relative">
-          <input
-            id="story-imageUrl" value={form.imageUrl} onChange={e => setForm({...form, imageUrl: e.target.value})}
-            placeholder=" " className="peer w-full px-4 pt-5 pb-2 rounded-xl border border-[#F3D6DF] focus:outline-none focus:ring-2 focus:ring-[#FF5C8A]/30 text-[#2B1B22]"
-          />
-          <label htmlFor="story-imageUrl" className="absolute left-3 -top-2 px-1 text-xs bg-white text-[#8A6672] transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-[#B58A96] peer-placeholder-shown:bg-transparent peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#FF5C8A] peer-focus:bg-white cursor-text">
-            Image URL (Leave empty for random)
-          </label>
+        <div>
+          <label className="block text-sm font-medium text-[#2B1B22] mb-2">Story Photo</label>
+          <div className="bg-[#FAF5F7] border border-[#F3D6DF] rounded-2xl p-5">
+            <label
+              htmlFor="story-image"
+              className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#F3D6DF] rounded-2xl bg-white cursor-pointer hover:border-[#FF5C8A] hover:bg-[#FFF7FA] transition"
+            >
+              <ImageIcon className="w-10 h-10 text-[#FF5C8A] mb-3" />
+              <p className="font-semibold text-[#2B1B22]">Click to upload photo</p>
+              <p className="text-sm text-[#8A6672] mt-1">PNG, JPG, JPEG (Optional)</p>
+              <input
+                id="story-image" type="file" accept="image/*" className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
+            {imagePreview && (
+              <div className="mt-4 flex items-center gap-4">
+                <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-sm border border-[#F3D6DF]" />
+                <span className="text-sm text-[#8A6672] bg-white px-3 py-1 rounded-full border border-[#F3D6DF]">Image selected</span>
+              </div>
+            )}
+          </div>
         </div>
         <div className="relative">
           <textarea
